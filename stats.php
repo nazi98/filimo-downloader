@@ -3,6 +3,9 @@
 <head>
     <meta charset='UTF-8'>
     <title>Filimo Downloader Stats</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.0/jquery.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
     <script type="text/javascript">
         var timeout;
         document.addEventListener("DOMContentLoaded", function (event) {
@@ -18,7 +21,7 @@
             document.getElementById('refresh_status').innerHTML = 'On';
             timeout = setTimeout(function () {
                 window.location.reload();
-            }, 2000);
+            }, 4000);
         }
     </script>
     <script>
@@ -77,32 +80,34 @@
             }
         }
     </script>
-
     <style>
+		@import url('https://thefont.ir/storage/IranSans/Farsi/');
+		div,table,span,h1,thead,tbody,td,tr,button,p{ font-family:'IranSans FD' !important; }
         table {
             font-size: 20px;
             width: 100%;
         }
-
         td, th {
             padding: 10px;
         }
-
         th {
             cursor: pointer;
         }
+		a{
+			text-decoration:none !important;
+		}
     </style>
 </head>
 
 <body>
 <h1>Filimo Downloader Stats</h1>
-
+<div style="height:20px;"></div>
 Refresh:
-<button onclick="startReload();">Start</button>
-<button onclick="stopReload();">Stop</button>
+<button class="btn btn-primary" onclick="startReload();">Start</button>
+<button class="btn btn-primary" onclick="stopReload();">Stop</button>
 <span id="refresh_status"></span>
-
-<table border='1' id="myTable">
+<div style="height:20px;"></div>
+<table border='1' id="myTable" class="table table-bordered">
     <thead>
     <tr style='font-weight:bold;'>
 		<?php $sort_index = -1; ?>
@@ -119,10 +124,10 @@ Refresh:
         <th onclick="sortTable(<?php echo ++$sort_index; ?>)">current file size</th>
         <th onclick="sortTable(<?php echo ++$sort_index; ?>)">last speed</th>
         <th onclick="sortTable(<?php echo ++$sort_index; ?>)">progress</th>
-        <th onclick="sortTable(<?php echo ++$sort_index; ?>)">progress bar</th>
+        <th class="d-none" onclick="sortTable(<?php echo ++$sort_index; ?>)">progress bar</th>
         <th onclick="sortTable(<?php echo ++$sort_index; ?>)">last modified date</th>
-		<th onclick="sortTable(<?php echo ++$sort_index; ?>)">info</th>
-		<th onclick="sortTable(<?php echo ++$sort_index; ?>)">log</th>
+		<th class="d-none" onclick="sortTable(<?php echo ++$sort_index; ?>)">info</th>
+		<th class="d-none" onclick="sortTable(<?php echo ++$sort_index; ?>)">log</th>
     </tr>
     </thead>
     <?php
@@ -134,9 +139,11 @@ Refresh:
         return filemtime($b) - filemtime($a);
     });
     //usort($files, create_function('$a,$b', 'return filemtime($b) - filemtime($a);'));
+	$rd = 0;
     foreach ($files as $file) {
+		$rd++;
         echo "<tr>\n";
-
+		
         $dirname = pathinfo($file, PATHINFO_DIRNAME);
         $filename = pathinfo($file, PATHINFO_FILENAME);
 
@@ -153,7 +160,7 @@ Refresh:
             $filesize = 0;
         }
 
-		echo "<td><a href='$filename_cover' target='_blank'><img src='$filename_cover' width='70'></a></td>\n";
+		echo "<td><a data-lightbox='$rd' href='$filename_cover' target='_blank'><img src='$filename_cover' width='70'></a></td>\n";
         echo "<td><a href='$filename_video' target='_blank'>$filename.mp4</a></td>\n";
 
         $content = @file_get_contents($filename_info);
@@ -210,12 +217,14 @@ Refresh:
         $last_speed = array_pop($last_speed);
 
         echo "<td>{$last_speed}x</td>\n";
-        echo "<td>{$progress}%</td>\n";
-        echo "<td><div style='width:100px;height: 20px;border: 1px solid #0095ff;'><div style='width:$progress%; background-color: #0095ff;height: 20px;'></div></div></td>\n";
+        echo "<td style='font-weight:bold;'>{$progress}%</td>\n";
+        
+		//echo "<td><div style='width:100px;height: 20px;border: 1px solid #0095ff;'><div style='width:$progress%; background-color: #0095ff;height: 20px;'></div></div></td>\n";
 
         echo "<td>$modified_date</td>\n";
-		echo "<td><a href='$filename_info' target='_blank'>info</a></td>\n";
-		echo "<td><a href='$filename_log' target='_blank'>log</a></td>\n";
+		
+		//echo "<td><a href='$filename_info' target='_blank'>info</a></td>\n";
+		//echo "<td><a href='$filename_log' target='_blank'>log</a></td>\n";
 
 
         echo "</tr>\n";
@@ -223,7 +232,7 @@ Refresh:
     ?>
 </table>
 
-<pre>
+<pre class="d-none">
 ===========================================================
 Filimo Downloader - version 0.1.0 - Copyright 2017
 By Nabi KaramAliZadeh &lt;www.nabi.ir&gt; &lt;nabikaz@gmail.com&gt;
@@ -231,7 +240,16 @@ Signup here: http://filimo.com/invite/NabiKAZ/a8ca
 Project link: https://github.com/NabiKAZ/filimo-downloader
 ===========================================================
 </pre>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function (event) {
+		lightbox.option({
+			'resizeDuration': 200,
+			'wrapAround': true
+		});
+    });
+</script>
 </body>
 </html>
 <?php
@@ -242,5 +260,4 @@ function filesize_formatted($path)
     $power = $size > 0 ? floor(log($size, 1024)) : 0;
     return number_format($size / pow(1024, $power), 2, '.', ',') . ' ' . $units[$power];
 }
-
 ?>
